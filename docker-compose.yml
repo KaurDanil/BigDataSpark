@@ -1,1 +1,45 @@
-test
+services:
+  postgres:
+    image: postgres:15
+    container_name: bigdata_postgres
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5439:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bigdata_net
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: bigdata_clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - bigdata_net
+
+  spark:
+    image: jupyter/pyspark-notebook:latest
+    container_name: bigdata_spark
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+    volumes:
+      - ./:/home/jovyan/work
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    networks:
+      - bigdata_net
+
+volumes:
+  postgres_data:
+  clickhouse_data:
+
+networks:
+  bigdata_net:
