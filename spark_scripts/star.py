@@ -1,11 +1,29 @@
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
+conf = {
+    "spark.driver.memory": "1g",
+    "spark.executor.memory": "1g",
+    "spark.driver.cores": "1",
+    "spark.executor.cores": "1",
+    "spark.sql.shuffle.partitions": "4",
+    "spark.default.parallelism": "4"
+}
 
-spark = SparkSession.builder \
-    .appName("star") \
-    .config("spark.jars", "/home/jovyan/work/drivers/postgresql-42.7.11.jar") \
-    .getOrCreate()
+builder = (
+    SparkSession
+    .builder
+    .appName("star")
+    .config(
+        "spark.jars",
+        "/home/jovyan/work/drivers/postgresql-42.7.11.jar"
+    )
+)
+
+for k, v in conf.items():
+    builder = builder.config(k, v)
+
+spark = builder.getOrCreate()
 
 
 postgres_url = "jdbc:postgresql://postgres:5432/mydb"
